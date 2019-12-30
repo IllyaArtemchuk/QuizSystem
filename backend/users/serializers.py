@@ -5,11 +5,13 @@ from django.contrib.auth import get_user_model
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('email', 'username', 'password', 'is_student', 'is_teacher')
+        fields = ('email', 'username', 'password', 'Role')
 
 class CustomRegisterSerializer(RegisterSerializer):
-    is_student = serializers.BooleanField()
-    is_teacher = serializers.BooleanField()
+
+    Role = serializers.CharField(
+        max_length=2
+    )
     class Meta:
         model = get_user_model()
-        fields = ('email', 'username', 'password', 'is_student', 'is_teacher')
+        fields = ('email', 'username', 'password', 'Role')

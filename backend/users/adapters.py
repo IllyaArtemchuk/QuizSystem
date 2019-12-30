@@ -9,7 +9,6 @@ class CustomUserAccountAdapter(DefaultAccountAdapter):
         """
         from allauth.account.utils import user_field
         user = super().save_user(request, user, form, False)
-        user_field(user, 'is_student', request.data.get('is_student', ''))
-        user_field(user, 'is_teacher', request.data.get('is_teacher', ''))
+        user_field(user, 'Role', request.data.get('Role', ''))
         user.save()
         return user
