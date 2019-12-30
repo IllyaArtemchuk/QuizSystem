@@ -1,5 +1,14 @@
 from rest_framework import serializers
-from homework.models import Quiz, Question, Choice
+from homework.models import Quiz, Question, Choice, Course
+
+
+class CourseSerializer(serializers.ModelSerializer):
+
+    quizes = serializers.PrimaryKeyRelatedField(many=True, queryset=Quiz.objects.all())
+
+    class Meta:
+        model = Course
+        fields = ('title', 'description', 'teacher', 'students', 'quizes')
 
 class QuizSerializer(serializers.ModelSerializer):
 
@@ -7,7 +16,7 @@ class QuizSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Quiz
-        fields = ('title', 'teacher', 'questions')     
+        fields = ('title', 'course', 'questions')     
 
 class QuestionSerializer(serializers.ModelSerializer):
 

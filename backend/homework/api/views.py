@@ -1,15 +1,49 @@
-from rest_framework.generics import ListAPIView
+from django.shortcuts import get_object_or_404
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework import viewsets
-from homework.models import Quiz, Question
-from .serializers import QuizSerializer, QuestionSerializer
+from rest_framework.response import Response
+from homework.models import Quiz, Question, Course
+from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer
 
 
-class QuizViewSet(viewsets.ModelViewSet):
-    """
-    A Viewset for listing or retrieving quizes
-    """
-    queryset = Quiz.objects.all()
+
+#Course Query Views
+
+class CourseTeacherView(ListAPIView):
+    serializer_class = CourseSerializer
+
+    def get_queryset(self):
+        """
+        Returns the list of courses a teacher teaches
+        """
+        teacherID = self.kwargs['teacherID']
+        return Course.objects.filter(teacher__pk=teacherID)
+
+class CourseDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = CourseSerializer
+    queryset = Course.objects.all()
+
+
+
+
+
+#Quiz Query Views
+class QuizCourseView(ListAPIView):
     serializer_class = QuizSerializer
+
+    def get_queryset(self):
+        """
+        Returns the list of courses a teacher teaches
+        """
+        courseID = self.kwargs['courseID']
+        return Quiz.objects.filter(course__pk=courseID)
+
+
+class QuizDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = QuizSerializer
+    queryset = Quiz.objects.all()
+
+
 
 
 class QuestionListView(ListAPIView):

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Quiz, Question, Choice 
+from .models import Quiz, Question, Choice, Course
 
 
 class QuestionInline(admin.TabularInline):
@@ -13,4 +13,5 @@ class QuizAdmin(admin.ModelAdmin):
 admin.site.register(Quiz,QuizAdmin)
 admin.site.register(Question)
 admin.site.register(Choice)
+admin.site.register(Course)
 
