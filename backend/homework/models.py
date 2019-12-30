@@ -1,10 +1,10 @@
 from django.db import models
-from users.models import Teacher
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth import get_user_model
 
 class Quiz(models.Model):
     title = models.CharField(max_length=180)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     
 
     def __str__(self):
@@ -12,7 +12,7 @@ class Quiz(models.Model):
 
 class Question(models.Model):
 
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
     questionNumber = models.PositiveIntegerField()
     content = models.CharField(max_length=400)
     correct_answer = models.PositiveIntegerField(default=1, validators=[
@@ -24,13 +24,15 @@ class Question(models.Model):
         return 'question {} for {}'.format(self.questionNumber, self.quiz.title )
 
 class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choices")
+
     text = models.CharField(max_length=200)
     choiceID = models.PositiveIntegerField(default=1, validators=[
         MaxValueValidator(6),
         MinValueValidator(1)
     ])
 
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)\
+    
 
     def __str__(self):
         return  'Choice {} for question {} from {}'.format(self.choiceID, self.question.questionNumber, self.question.quiz.title)
