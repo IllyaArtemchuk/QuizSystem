@@ -6,9 +6,9 @@ import CourseCreate from "./containers/CourseCreateView";
 
 const BaseRouter = () => (
   <div>
-    <Route exact path="/:userID" component={CourseList} />
+    <Route exact path="/home/:userID" component={CourseList} />
     <Route exact path="/course/:courseID" component={CourseDetail} />
-    <Route exact path="/course/create" component={CourseCreate} />
+    <Route exact path="/create/course" component={CourseCreate} />
   </div>
 );
 

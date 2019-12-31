@@ -17,13 +17,13 @@ class CustomLayout extends React.Component {
             style={{ lineHeight: "64px" }}
           >
             <Menu.Item key="1">
-              <Link>nav 1</Link>
+              <Link to="/">nav 1</Link>
             </Menu.Item>
             <Menu.Item key="2">
-              <Link>nav 2</Link>
+              <Link to="/">nav 2</Link>
             </Menu.Item>
             <Menu.Item key="3">
-              <Link>nav 3</Link>
+              <Link to="/">nav 3</Link>
             </Menu.Item>
           </Menu>
         </Header>

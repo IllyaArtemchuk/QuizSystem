@@ -6,7 +6,7 @@ class CourseCreate extends React.Component {
     return (
       <div>
         <h2>Create A New Course</h2>
-        <CustomForm />
+        <CustomForm requestType="post" buttonText="Create" courseID={null} />
       </div>
     );
   }
