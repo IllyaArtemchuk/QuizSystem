@@ -8,11 +8,11 @@ class CourseList extends React.Component {
   };
 
   componentDidMount() {
-    axios.get("http://127.0.0.1:8000/api/v1/1/courses/").then(res => {
+    const userID = this.props.match.params.userID;
+    axios.get(`http://127.0.0.1:8000/api/v1/${userID}/courses/`).then(res => {
       this.setState({
         courses: res.data
       });
-      console.log(res.data);
     });
   }
   render() {

@@ -8,7 +8,7 @@ from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer
 
 # Course Query Views
 
-class CourseTeacherView(ListAPIView):
+class CourseListView(ListAPIView):
     serializer_class = CourseSerializer
 
     def get_queryset(self):

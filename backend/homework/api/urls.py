@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (QuestionListView,
-                    CourseTeacherView,
+                    CourseListView,
                     CourseDetailView,
                     QuizCourseView,
                     QuizDetailView,
@@ -9,7 +9,7 @@ from .views import (QuestionListView,
 
 urlpatterns = [
     path('<int:quizID>/questions/', QuestionListView.as_view()),
-    path('<int:userID>/courses/', CourseTeacherView.as_view()),
+    path('<int:userID>/courses/', CourseListView.as_view()),
     path('course/<int:pk>/', CourseDetailView.as_view()),
     path('course/create/', CourseCreateView.as_view()),
     path('<int:courseID>/quizes/', QuizCourseView.as_view()),

@@ -11,7 +11,10 @@ const Courses = props => {
         dataSource={props.data}
         renderItem={item => (
           <List.Item>
-            <List.Item.Meta title={item.title} description={item.description} />
+            <List.Item.Meta
+              title={<a href={`course/${item.id}`}>{item.title}</a>}
+              description={item.description}
+            />
           </List.Item>
         )}
       />
