@@ -3,17 +3,14 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    STUDENT = "ST"
-    TEACHER = "TE"
-    ROLE_CHOICES = [
-        (STUDENT, "Student"),
-        (TEACHER, "Teacher")
-    ]
+    ROLE_CHOICES = (
+        ("ST", "Student"),
+        ("TE", "Teacher")
+    )
 
-    Role = models.CharField(
+    role = models.CharField(
         max_length=2,
-        choices=ROLE_CHOICES,
-        default=STUDENT
+        choices=ROLE_CHOICES
     )
 
     def __str__(self):
@@ -22,9 +19,9 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         created = not self.pk
         super().save(*args, **kwargs)
-        if created and self.Role == "ST":
+        if created and self.role == 1:
             Student.objects.create(user=self)
-        elif created and self.Role == "TE":
+        elif created and self.role == 2:
             Teacher.objects.create(user=self)
 
 

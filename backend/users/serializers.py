@@ -7,18 +7,16 @@ from .models import Student, Teacher
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'email', 'username', 'password', 'Role')
+        fields = ('id', 'email', 'username', 'password', 'role')
 
 
 class CustomRegisterSerializer(RegisterSerializer):
 
-    Role = serializers.CharField(
-        max_length=2
-    )
+    role = serializers.CharField(max_length=2)
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'username', 'password', 'Role')
+        fields = ('email', 'username', 'password', 'role')
 
 
 class StudentSerializer(serializers.ModelSerializer):

@@ -1,5 +1,4 @@
 import React from "react";
-import Courses from "../components/Courses";
 import CustomForm from "../components/Form";
 import axios from "axios";
 import { Card, Icon, Button } from "antd";

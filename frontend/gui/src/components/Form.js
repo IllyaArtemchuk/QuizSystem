@@ -33,6 +33,8 @@ class CustomForm extends React.Component {
           })
           .then(res => console.log(res))
           .catch(err => console.log(err));
+      default:
+        console.log("Request type invalid");
     }
   };
 

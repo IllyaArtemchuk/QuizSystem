@@ -1,9 +1,18 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
+from django.contrib.auth import get_user_model
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework import viewsets
 from rest_framework.response import Response
 from homework.models import Quiz, Question, Course
+from users.models import User, Teacher, Student
 from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer
+from users.serializers import UserSerializer
+
+
+# User Details
+class UserDetailView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    queryset = get_user_model().objects.all()
 
 
 # Course Query Views

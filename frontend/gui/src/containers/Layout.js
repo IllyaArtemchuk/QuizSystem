@@ -1,7 +1,8 @@
-import { Layout, Menu, Breadcrumb } from "antd";
+import { Layout, Menu } from "antd";
 import React from "react";
 import { Link } from "react-router-dom";
-
+import { connect } from "react-redux";
+import * as actions from "../store/actions/auth";
 const { Header, Content, Footer } = Layout;
 
 class CustomLayout extends React.Component {
@@ -17,14 +18,17 @@ class CustomLayout extends React.Component {
             style={{ lineHeight: "64px" }}
           >
             <Menu.Item key="1">
-              <Link to="/">nav 1</Link>
+              <Link to="/">Home</Link>
             </Menu.Item>
-            <Menu.Item key="2">
-              <Link to="/">nav 2</Link>
-            </Menu.Item>
-            <Menu.Item key="3">
-              <Link to="/">nav 3</Link>
-            </Menu.Item>
+            {this.props.isAuthenticated ? (
+              <Menu.Item key="2" onClick={this.props.logout}>
+                Logout
+              </Menu.Item>
+            ) : (
+              <Menu.Item key="2">
+                <Link to="/login">Login</Link>
+              </Menu.Item>
+            )}
           </Menu>
         </Header>
         <Content style={{ padding: "0 50px" }}>
@@ -40,4 +44,10 @@ class CustomLayout extends React.Component {
   }
 }
 
-export default CustomLayout;
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(actions.logout())
+  };
+};
+
+export default connect(null, mapDispatchToProps)(CustomLayout);
