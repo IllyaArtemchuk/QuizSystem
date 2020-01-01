@@ -1,6 +1,6 @@
 import { Layout, Menu } from "antd";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "../store/actions/auth";
 const { Header, Content, Footer } = Layout;
@@ -29,6 +29,11 @@ class CustomLayout extends React.Component {
                 <Link to="/login">Login</Link>
               </Menu.Item>
             )}
+            {this.props.isAuthenticated ? null : (
+              <Menu.Item key="3">
+                <Link to="/signup">Sign Up</Link>
+              </Menu.Item>
+            )}
           </Menu>
         </Header>
         <Content style={{ padding: "0 50px" }}>
@@ -50,4 +55,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(CustomLayout);
+export default withRouter(connect(null, mapDispatchToProps)(CustomLayout));
