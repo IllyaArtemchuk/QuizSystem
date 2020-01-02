@@ -2,9 +2,10 @@ import React from "react";
 import "antd/dist/antd.css";
 import CustomLayout from "./containers/Layout";
 import BaseRouter from "./routes";
-import { BrowserRouter as Router } from "react-router-dom";
+import { Router } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "./store/actions/auth";
+import history from "./history";
 
 class App extends React.Component {
   componentDidMount() {
@@ -13,7 +14,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Router>
+        <Router history={history}>
           <CustomLayout {...this.props}>
             <BaseRouter />
           </CustomLayout>

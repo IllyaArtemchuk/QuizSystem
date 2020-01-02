@@ -19,9 +19,9 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         created = not self.pk
         super().save(*args, **kwargs)
-        if created and self.role == 1:
+        if created and self.role == "ST":
             Student.objects.create(user=self)
-        elif created and self.role == 2:
+        elif created and self.role == "TE":
             Teacher.objects.create(user=self)
 
 

@@ -1,6 +1,7 @@
 import React from "react";
 import CustomForm from "../components/Form";
 import axios from "axios";
+import { connect } from "react-redux";
 import { Card, Icon, Button } from "antd";
 
 class CourseDetail extends React.Component {
@@ -11,13 +12,22 @@ class CourseDetail extends React.Component {
     deleteTriggered: false
   };
 
-  componentDidMount() {
-    const courseID = this.props.match.params.courseID;
-    axios.get(`http://127.0.0.1:8000/api/v1/course/${courseID}/`).then(res => {
-      this.setState({
-        course: res.data
-      });
-    });
+  componentDidUpdate(prevProps) {
+    if (this.props.token !== prevProps.token) {
+      console.log(this.props.token);
+      const courseID = this.props.match.params.courseID;
+      axios.defaults.headers = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${this.props.token}`
+      };
+      axios
+        .get(`http://127.0.0.1:8000/api/v1/course/${courseID}/`)
+        .then(res => {
+          this.setState({
+            course: res.data
+          });
+        });
+    }
   }
 
   handleSettingsVisibility = e => {
@@ -40,6 +50,10 @@ class CourseDetail extends React.Component {
 
   handleDelete = e => {
     const courseID = this.props.match.params.courseID;
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
     axios
       .delete(`http://127.0.0.1:8000/api/v1/course/${courseID}/`)
       .then(res => {
@@ -57,9 +71,11 @@ class CourseDetail extends React.Component {
           <div>
             <CustomForm
               requestType="put"
+              course={this.state.course}
               courseID={this.props.match.params.courseID}
               buttonText="Update"
               content={this.state.course}
+              token={this.props.token}
             />
             <Button type="primary" onClick={e => this.handleEditVisibility(e)}>
               Cancel Edit
@@ -133,4 +149,10 @@ class CourseDetail extends React.Component {
   }
 }
 
-export default CourseDetail;
+const mapStateToProps = state => {
+  return {
+    token: state.token
+  };
+};
+
+export default connect(mapStateToProps)(CourseDetail);

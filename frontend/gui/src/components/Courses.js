@@ -6,11 +6,10 @@ const Courses = props => {
     <div>
       <List
         size="large"
-        header={<div>Courses</div>}
         bordered
         dataSource={props.data}
         renderItem={item => (
-          <List.Item>
+          <List.Item style={{ textAlign: "center" }}>
             <List.Item.Meta
               title={<a href={`course/${item.id}`}>{item.title}</a>}
               description={item.description}

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from homework.models import Quiz, Question, Choice, Course
+from users.serializers import StudentSerializer
 
 
 class CourseSerializer(serializers.ModelSerializer):

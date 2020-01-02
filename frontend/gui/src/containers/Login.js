@@ -10,10 +10,14 @@ class NormalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.props.onAuth(values.username, values.password);
+        this.props
+          .onAuth(values.username, values.password)
+          .then(
+            console.log("redirect to home triggered"),
+            this.props.history.push("/home")
+          );
       }
     });
-    this.props.history.push("/");
   };
 
   render() {
@@ -40,6 +44,7 @@ class NormalLoginForm extends React.Component {
                     <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                   }
                   placeholder="Username"
+                  name="username"
                 />
               )}
             </Form.Item>
@@ -55,6 +60,7 @@ class NormalLoginForm extends React.Component {
                   }
                   type="password"
                   placeholder="Password"
+                  name="password"
                 />
               )}
             </Form.Item>

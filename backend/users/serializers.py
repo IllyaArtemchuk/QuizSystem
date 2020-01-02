@@ -7,7 +7,7 @@ from .models import Student, Teacher
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'email', 'username', 'password', 'role')
+        fields = ('id', 'email', 'username', 'role')
 
 
 class CustomRegisterSerializer(RegisterSerializer):

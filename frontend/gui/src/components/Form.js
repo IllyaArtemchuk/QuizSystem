@@ -4,11 +4,29 @@ import { Form, Input, Button } from "antd";
 const { TextArea } = Input;
 
 class CustomForm extends React.Component {
-  handleSubmit = (event, requestType, courseID) => {
+  handleSubmit = (event, requestType) => {
+    event.preventDefault();
     const title = event.target.elements.title.value;
-    const description = event.target.elements.title.value;
-    const teacher = 17;
-    console.log(title, description, teacher);
+    const description = event.target.elements.description.value;
+    const teacherID = this.props.course.teacher;
+    const students = this.props.course.students;
+    const quizes = this.props.course.quizes;
+
+    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+    axios.defaults.xsrfCookieName = "csrftoken";
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    console.log("here is course object", this.props.course);
+    console.log(
+      "this is the data sent to the custom form submit",
+      title,
+      description,
+      teacherID,
+      students,
+      quizes
+    );
 
     switch (requestType) {
       case "post":
@@ -16,22 +34,22 @@ class CustomForm extends React.Component {
           .post(`http://127.0.0.1:8000/api/v1/course/create/`, {
             title: title,
             description: description,
-            teacher: 17,
-            students: [],
-            quizes: []
+            teacher: teacherID,
+            students: students,
+            quizes: quizes
           })
           .then(res => console.log(res))
           .catch(err => console.log(err));
       case "put":
         return axios
-          .put(`http://127.0.0.1:8000/api/v1/course/${courseID}/`, {
+          .put(`http://127.0.0.1:8000/api/v1/course/${this.props.course.id}/`, {
             title: title,
             description: description,
-            teacher: 17,
-            students: [],
-            quizes: []
+            teacher: teacherID,
+            students: students,
+            quizes: quizes
           })
-          .then(res => console.log(res))
+          .then(this.props.history.push(`/course/${this.props.course.id}`))
           .catch(err => console.log(err));
       default:
         console.log("Request type invalid");
@@ -40,11 +58,7 @@ class CustomForm extends React.Component {
 
   render() {
     return (
-      <Form
-        onSubmit={e =>
-          this.handleSubmit(e, this.props.requestType, this.props.courseID)
-        }
-      >
+      <Form onSubmit={e => this.handleSubmit(e, this.props.requestType)}>
         <Form.Item label="Title">
           <Input
             name="title"

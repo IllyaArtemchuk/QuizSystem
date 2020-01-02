@@ -1,5 +1,6 @@
 import * as actionsTypes from "./actionTypes";
 import axios from "axios";
+import history from "../../history";
 
 export const authStart = () => {
   return {
@@ -39,10 +40,15 @@ export const checkAuthTimeout = expirationTime => {
 
 export const authLogin = (username, password) => {
   return dispatch => {
+    console.log(username, password);
     dispatch(authStart());
+    axios.defaults.headers = {
+      "Content-Type": "application/json"
+    };
     axios
       .post("http://localhost:8000/api/v1/rest-auth/login/", {
         username: username,
+        email: "",
         password: password
       })
       .then(res => {
@@ -52,6 +58,7 @@ export const authLogin = (username, password) => {
         localStorage.setItem("expirationDate", expirationDate);
         dispatch(authSuccess(token));
         dispatch(checkAuthTimeout(3600));
+        history.push("/home");
       })
       .catch(err => {
         dispatch(authFail(err));
@@ -62,7 +69,9 @@ export const authLogin = (username, password) => {
 export const authSignup = (username, email, password1, password2, role) => {
   return dispatch => {
     dispatch(authStart());
-    console.log(username, email, password1, password2, role);
+    axios.defaults.headers = {
+      "Content-Type": "application/json"
+    };
     axios
       .post("http://localhost:8000/api/v1/rest-auth/registration/", {
         username: username,
@@ -78,6 +87,7 @@ export const authSignup = (username, email, password1, password2, role) => {
         localStorage.setItem("expirationDate", expirationDate);
         dispatch(authSuccess(token));
         dispatch(checkAuthTimeout(3600));
+        history.push("/home");
       })
       .catch(err => {
         dispatch(authFail(err));

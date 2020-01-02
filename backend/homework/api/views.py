@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsTeacher, IsTeacherOrReadOnly
 from homework.models import Quiz, Question, Course
 from users.models import User, Teacher, Student
 from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer
@@ -10,9 +12,10 @@ from users.serializers import UserSerializer
 
 
 # User Details
-class UserDetailView(RetrieveAPIView):
-    serializer_class = UserSerializer
-    queryset = get_user_model().objects.all()
+class CurrentUserView(RetrieveAPIView):
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
 
 
 # Course Query Views
@@ -22,22 +25,23 @@ class CourseListView(ListAPIView):
 
     def get_queryset(self):
         """
-        Returns the list of courses a teacher teaches
+        Returns the list of courses the signed in teacher teaches or student takes
         """
-        userID = self.kwargs['userID']
-
-        if Course.objects.filter(students__pk=userID):
-            return Course.objects.filter(students__pk=userID)
-        elif Course.objects.filter(teacher__pk=userID):
-            return Course.objects.filter(teacher__pk=userID)
+        user = self.request.user
+        if user.role == "ST":
+            return Course.objects.filter(students__user=user)
+        elif user.role == "TE":
+            return Course.objects.filter(teacher=user)
 
 
 class CourseDetailView(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsTeacherOrReadOnly, )
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
 
 class CourseCreateView(CreateAPIView):
+    permission_classes = (IsAuthenticated, IsTeacher, )
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
