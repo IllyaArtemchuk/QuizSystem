@@ -1,12 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Row, Col } from "antd";
+import { Row, Col, Button } from "antd";
 import CourseList from "./CourseListView";
+import CustomForm from "../components/Form";
 
 class Home extends React.Component {
   state = {
-    user: {}
+    user: {},
+    newCourseShowing: false
   };
 
   componentDidMount() {
@@ -47,6 +49,13 @@ class Home extends React.Component {
         });
     }
   }
+
+  newCourseToggle = e => {
+    this.state.newCourseShowing
+      ? this.setState({ newCourseShowing: false })
+      : this.setState({ newCourseShowing: true });
+  };
+
   render() {
     return (
       <div>
@@ -63,7 +72,29 @@ class Home extends React.Component {
           <Col span={2}></Col>
         </Row>
         <Row>
-          <CourseList token={this.props.token} />
+          {this.state.newCourseShowing ? (
+            <CustomForm
+              requestType="post"
+              user={this.state.user}
+              buttonText={"Create"}
+              token={this.props.token}
+            />
+          ) : (
+            <CourseList token={this.props.token} />
+          )}
+        </Row>
+        <Row>
+          <Col span={8}></Col>
+          <Col span={8} style={{ textAlign: "center", marginTop: "15px" }}>
+            <Button
+              type="primary"
+              style={{ marginLeft: "20px" }}
+              onClick={e => this.newCourseToggle(e)}
+            >
+              {this.state.newCourseShowing ? "Cancel" : "New Course"}
+            </Button>
+          </Col>
+          <Col span={8}></Col>
         </Row>
       </div>
     );

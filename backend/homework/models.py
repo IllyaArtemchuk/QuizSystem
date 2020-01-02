@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
 from users.models import Student
+from datetime import datetime
+from django.utils import timezone
 
 
 class Course(models.Model):
@@ -10,6 +12,7 @@ class Course(models.Model):
 
     teacher = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     students = models.ManyToManyField(Student, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title
@@ -19,9 +22,19 @@ class Quiz(models.Model):
     title = models.CharField(max_length=180)
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="quizes", null=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title
+
+
+class GradedQuiz(models.Model):
+    quiz = models.OneToOneField(Quiz, on_delete=models.CASCADE)
+    student = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    grade = models.FloatField()
+
+    def __str__(self):
+        'graded quiz {} for {}'.format(self.quiz.title, self.student.username)
 
 
 class Question(models.Model):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from homework.models import Quiz, Question, Choice, Course
+from homework.models import Quiz, GradedQuiz, Question, Choice, Course
 from users.serializers import StudentSerializer
 
 
@@ -10,7 +10,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('id', 'title', 'description',
+        fields = ('id', 'title', 'description', 'created_at',
                   'teacher', 'students', 'quizes')
 
 
@@ -22,6 +22,13 @@ class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = ('id', 'title', 'course', 'questions')
+
+
+class GradedQuizSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GradedQuiz
+        field = ('id', 'student', 'quiz', 'grade')
 
 
 class QuestionSerializer(serializers.ModelSerializer):

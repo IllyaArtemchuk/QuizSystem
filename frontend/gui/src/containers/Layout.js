@@ -8,7 +8,7 @@ const { Header, Content, Footer } = Layout;
 class CustomLayout extends React.Component {
   render() {
     return (
-      <Layout className="layout">
+      <Layout className="layout" style={{ height: "100vh" }}>
         <Header>
           <div className="logo" />
           <Menu
@@ -42,7 +42,9 @@ class CustomLayout extends React.Component {
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          Ant Design ©2018 Created by Ant UED
+          <a href="https://github.com/IllyaArtemchuk">
+            github.com/IllyaArtemchuk
+          </a>
         </Footer>
       </Layout>
     );

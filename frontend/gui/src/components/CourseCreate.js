@@ -1,12 +1,11 @@
 import React from "react";
-import CustomForm from "../components/Form";
+import CustomForm from "./Form";
 
 class CourseCreate extends React.Component {
   render() {
     return (
       <div>
-        <h2>Create A New Course</h2>
-        <CustomForm requestType="post" buttonText="Create" courseID={null} />
+        <CustomForm requestType="post" buttonText="Create" teacher={} />
       </div>
     );
   }

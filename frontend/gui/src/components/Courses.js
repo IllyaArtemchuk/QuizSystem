@@ -5,6 +5,12 @@ const Courses = props => {
   return (
     <div>
       <List
+        pagination={{
+          onChange: page => {
+            console.log(page);
+          },
+          pageSize: 4
+        }}
         size="large"
         bordered
         dataSource={props.data}

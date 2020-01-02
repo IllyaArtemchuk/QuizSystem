@@ -12,9 +12,21 @@ class CourseDetail extends React.Component {
     deleteTriggered: false
   };
 
+  componentDidMount() {
+    const courseID = this.props.match.params.courseID;
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios.get(`http://127.0.0.1:8000/api/v1/course/${courseID}/`).then(res => {
+      this.setState({
+        course: res.data
+      });
+    });
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.token !== prevProps.token) {
-      console.log(this.props.token);
       const courseID = this.props.match.params.courseID;
       axios.defaults.headers = {
         "Content-Type": "application/json",

@@ -29,9 +29,9 @@ class CourseListView(ListAPIView):
         """
         user = self.request.user
         if user.role == "ST":
-            return Course.objects.filter(students__user=user)
+            return Course.objects.filter(students__user=user).order_by('-created_at')
         elif user.role == "TE":
-            return Course.objects.filter(teacher=user)
+            return Course.objects.filter(teacher=user).order_by('-created_at')
 
 
 class CourseDetailView(RetrieveUpdateDestroyAPIView):
