@@ -47,8 +47,9 @@ class CourseCreateView(CreateAPIView):
 
 
 # Quiz Query Views
-class QuizCourseView(ListAPIView):
+class QuizListView(ListAPIView):
     serializer_class = QuizSerializer
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         """
@@ -59,6 +60,7 @@ class QuizCourseView(ListAPIView):
 
 
 class QuizDetailView(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsTeacherOrReadOnly, )
     serializer_class = QuizSerializer
     queryset = Quiz.objects.all()
 

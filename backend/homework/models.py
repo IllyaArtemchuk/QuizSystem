@@ -20,6 +20,7 @@ class Course(models.Model):
 
 class Quiz(models.Model):
     title = models.CharField(max_length=180)
+    teacher = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="quizes", null=True)
     created_at = models.DateTimeField(default=timezone.now)
@@ -40,7 +41,7 @@ class GradedQuiz(models.Model):
 class Question(models.Model):
     quiz = models.ForeignKey(
         Quiz, on_delete=models.CASCADE, related_name="questions")
-    questionNumber = models.PositiveIntegerField()
+    question_number = models.PositiveIntegerField()
     content = models.CharField(max_length=400)
     correct_answer = models.PositiveIntegerField(default=1, validators=[
         MaxValueValidator(6),
@@ -48,17 +49,16 @@ class Question(models.Model):
     ])
 
     def __str__(self):
-        return 'question {} for {}'.format(self.questionNumber, self.quiz.title)
+        return 'question {} for {}'.format(self.question_number, self.quiz.title)
 
 
 class Choice(models.Model):
-    question = models.ForeignKey(
-        Question, on_delete=models.CASCADE, related_name="choices")
     text = models.CharField(max_length=200)
-    choiceID = models.PositiveIntegerField(default=1, validators=[
+    quiz = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_number = models.PositiveIntegerField(default=1, validators=[
         MaxValueValidator(6),
         MinValueValidator(1)
     ])
 
     def __str__(self):
-        return 'Choice {} for question {} from {}'.format(self.choiceID, self.question.questionNumber, self.question.quiz.title)
+        'choice for {}'.format(self.quiz.title)

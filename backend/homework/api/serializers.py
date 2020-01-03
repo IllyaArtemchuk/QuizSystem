@@ -3,27 +3,6 @@ from homework.models import Quiz, GradedQuiz, Question, Choice, Course
 from users.serializers import StudentSerializer
 
 
-class CourseSerializer(serializers.ModelSerializer):
-
-    quizes = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Quiz.objects.all())
-
-    class Meta:
-        model = Course
-        fields = ('id', 'title', 'description', 'created_at',
-                  'teacher', 'students', 'quizes')
-
-
-class QuizSerializer(serializers.ModelSerializer):
-
-    questions = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Question.objects.all())
-
-    class Meta:
-        model = Quiz
-        fields = ('id', 'title', 'course', 'questions')
-
-
 class GradedQuizSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -31,11 +10,36 @@ class GradedQuizSerializer(serializers.ModelSerializer):
         field = ('id', 'student', 'quiz', 'grade')
 
 
+class ChoiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Choice
+        field = ('id', 'text', 'choice_number')
+
+
 class QuestionSerializer(serializers.ModelSerializer):
 
-    choices = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Choice.objects.all())
+    choices = ChoiceSerializer
 
     class Meta:
         model = Question
-        fields = ('id', 'questionNumber', 'content', 'choices')
+        fields = ('id', 'question_number', 'content', 'choices')
+
+
+class QuizSerializer(serializers.ModelSerializer):
+
+    questions = QuestionSerializer(many=True)
+
+    class Meta:
+        model = Quiz
+        fields = ('id', 'title', 'course', 'questions', 'teacher')
+
+
+class CourseSerializer(serializers.ModelSerializer):
+
+    quizes = QuizSerializer(many=True)
+
+    class Meta:
+        model = Course
+        fields = ('id', 'title', 'description', 'created_at',
+                  'teacher', 'students', 'quizes')

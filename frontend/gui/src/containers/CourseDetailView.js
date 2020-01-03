@@ -1,7 +1,8 @@
 import React from "react";
-import CustomForm from "../components/Form";
 import axios from "axios";
 import { connect } from "react-redux";
+import CustomForm from "../components/Form";
+import QuizList from "./QuizList";
 import { Card, Icon, Button } from "antd";
 
 class CourseDetail extends React.Component {
@@ -12,7 +13,7 @@ class CourseDetail extends React.Component {
     deleteTriggered: false
   };
 
-  componentDidMount() {
+  getCourseData = () => {
     const courseID = this.props.match.params.courseID;
     axios.defaults.headers = {
       "Content-Type": "application/json",
@@ -23,22 +24,17 @@ class CourseDetail extends React.Component {
         course: res.data
       });
     });
+  };
+
+  componentDidMount() {
+    if (this.props.token !== null) {
+      this.getCourseData();
+    }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.token !== prevProps.token) {
-      const courseID = this.props.match.params.courseID;
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${this.props.token}`
-      };
-      axios
-        .get(`http://127.0.0.1:8000/api/v1/course/${courseID}/`)
-        .then(res => {
-          this.setState({
-            course: res.data
-          });
-        });
+      this.getCourseData();
     }
   }
 
@@ -95,6 +91,7 @@ class CourseDetail extends React.Component {
           </div>
         ) : (
           <Card
+            style={{ textAlign: "center" }}
             extra={
               <div style={{ verticalAlign: "baseline" }}>
                 {this.state.settingsShowing ? (
@@ -156,6 +153,11 @@ class CourseDetail extends React.Component {
         ) : (
           <div></div>
         )}
+
+        <QuizList
+          courseID={this.props.match.params.courseID}
+          token={this.props.token}
+        />
       </div>
     );
   }
