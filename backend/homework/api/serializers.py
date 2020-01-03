@@ -7,19 +7,19 @@ class GradedQuizSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GradedQuiz
-        field = ('id', 'student', 'quiz', 'grade')
+        fields = ('id', 'student', 'quiz', 'grade')
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Choice
-        field = ('id', 'text', 'choice_number')
+        fields = ('id', 'text', 'choice_number')
 
 
 class QuestionSerializer(serializers.ModelSerializer):
 
-    choices = ChoiceSerializer
+    choices = ChoiceSerializer(many=True)
 
     class Meta:
         model = Question
@@ -37,7 +37,7 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
 
-    quizes = QuizSerializer(many=True)
+    quizes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Course

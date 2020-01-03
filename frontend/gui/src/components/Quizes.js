@@ -20,9 +20,7 @@ class Quizes extends React.Component {
               onClick={() => this.handleClick(item.id)}
             >
               <Icon type="check" />
-              <List.Item.Meta
-                title={<a href={`quiz/${item.id}`}>{item.title}</a>}
-              />
+              <List.Item.Meta title={item.title} />
             </List.Item>
           )}
         />

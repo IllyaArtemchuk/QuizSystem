@@ -35,7 +35,7 @@ class GradedQuiz(models.Model):
     grade = models.FloatField()
 
     def __str__(self):
-        'graded quiz {} for {}'.format(self.quiz.title, self.student.username)
+        return 'graded quiz {} for {}'.format(self.quiz.title, self.student.username)
 
 
 class Question(models.Model):
@@ -54,11 +54,12 @@ class Question(models.Model):
 
 class Choice(models.Model):
     text = models.CharField(max_length=200)
-    quiz = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(
+        Question, related_name="choices", on_delete=models.CASCADE)
     choice_number = models.PositiveIntegerField(default=1, validators=[
         MaxValueValidator(6),
         MinValueValidator(1)
     ])
 
     def __str__(self):
-        'choice for {}'.format(self.quiz.title)
+        return 'choice for question {}'.format(self.question.question_number)
