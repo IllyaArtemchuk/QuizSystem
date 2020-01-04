@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Row, Col, Button, Card, Typography } from "antd";
+import { Row, Col, Button, Card, Typography, message } from "antd";
 import { Radio } from "antd";
 const { Text } = Typography;
 
@@ -63,6 +63,9 @@ class QuizTake extends React.Component {
 
   //adds your submitted answer to the state and progresses the quiz to the next question
   handleNextQuestion = (question_number, choice_number) => {
+    if (this.state.multipleChoiceValue == 0) {
+      return message.error("You must choose an answer.");
+    }
     const answer = {
       question: question_number,
       answer: choice_number
