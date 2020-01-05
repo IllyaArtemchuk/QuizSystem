@@ -1,17 +1,23 @@
 import React from "react";
 import { connect } from "react-redux";
 import axios from "axios";
+import history from "../history";
 import { Row, Col, Button, Card, Typography, message } from "antd";
+import QuizComplete from "../components/QuizComplete";
 import { Radio } from "antd";
 const { Text } = Typography;
 
 class QuizTake extends React.Component {
+  _isMounted = false;
+
   state = {
     data: [],
     takingQuiz: false,
     questionNumber: 0,
     multipleChoiceValue: 0,
-    submittedAnswers: []
+    submittedAnswers: [],
+    quizComplete: false,
+    quizCompleteData: {}
   };
 
   getQuizData() {
@@ -20,24 +26,46 @@ class QuizTake extends React.Component {
       "Content-Type": "application/json",
       Authorization: `Token ${this.props.token}`
     };
-    axios.get(`http://127.0.0.1:8000/api/v1/quiz/${quizID}`).then(res => {
-      console.log("this is quiz data", res.data);
+    axios.get(`http://127.0.0.1:8000/api/v1/quiz/${quizID}/`).then(res => {
       this.setState({
         data: res.data
       });
     });
   }
 
+  checkIfQuizComplete() {
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios.get(`http://127.0.0.1:8000/api/v1/graded/`).then(res => {
+      for (let i = 0; i < res.data.length; i++) {
+        if (res.data[i].quiz === this.props.match.params.quizID) {
+          console.log(res.data[i].quiz);
+          message.warning("You have completed this quiz already");
+          return history.push("/home");
+        }
+      }
+    });
+  }
+
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.token !== null) {
+      this.checkIfQuizComplete();
       this.getQuizData();
     }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.token !== prevProps.token) {
+      this.checkIfQuizComplete();
       this.getQuizData();
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   //Code to make the multiple choice selections work
@@ -63,28 +91,74 @@ class QuizTake extends React.Component {
 
   //adds your submitted answer to the state and progresses the quiz to the next question
   handleNextQuestion = (question_number, choice_number) => {
-    if (this.state.multipleChoiceValue == 0) {
+    if (this.state.multipleChoiceValue === 0) {
       return message.error("You must choose an answer.");
     }
     const answer = {
       question: question_number,
       answer: choice_number
     };
-    this.setState(
-      {
+    if (this.state.data.questions.length > this.state.questionNumber + 1) {
+      this.setState({
         questionNumber: this.state.questionNumber + 1,
         submittedAnswers: this.state.submittedAnswers.concat(answer),
         multipleChoiceValue: 0
-      },
-      () => {
-        console.log(this.state);
-      }
-    );
+      });
+    } else {
+      this.setState(
+        {
+          submittedAnswers: this.state.submittedAnswers.concat(answer),
+          multipleChoiceValue: 0
+        },
+        () => {
+          this.handleSubmit();
+        }
+      );
+    }
   };
 
-  testClick = () => {
-    console.log("question number: " + this.state.questionNumber);
-    console.log("state data length" + this.state.data.questions.length);
+  // Handles all submit data and activates the quiz recap data
+  handleSubmit = () => {
+    const correctAnswers = this.state.data.questions.map(question => {
+      return {
+        questionNumber: question.question_number,
+        answer: question.correct_answer
+      };
+    });
+    const submittedAnswers = this.state.submittedAnswers;
+    let correctCount = 0;
+    for (let i = 0; i < submittedAnswers.length; i++) {
+      if (submittedAnswers[i].answer === correctAnswers[i].answer) {
+        correctCount += 1;
+      }
+    }
+
+    const correctRatio = (correctCount / correctAnswers.length).toFixed(2);
+    const quizID = this.state.data.id;
+
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios
+      .post(`http://127.0.0.1:8000/api/v1/grade/`, {
+        student: 1,
+        grade: correctRatio,
+        quiz: quizID
+      })
+      .then(() => {
+        this.setState({
+          quizComplete: true,
+          quizCompleteData: {
+            correctRatio: correctRatio,
+            numberCorrect: correctCount,
+            questionCount: correctAnswers.length
+          }
+        });
+      })
+      .catch(err => {
+        return message.error(err);
+      });
   };
 
   render() {
@@ -106,82 +180,83 @@ class QuizTake extends React.Component {
 
           {this.state.data.questions ? (
             <Col span={16} style={{ textAlign: "center" }}>
-              {!this.state.takingQuiz ? (
+              {!this.state.quizComplete ? (
                 <div>
-                  <h3 style={{ textAlign: "center" }}>
-                    Number of questions: {this.state.data.questions.length}
-                  </h3>
-                  <Button
-                    style={{
-                      backgroundColor: "rgb(80, 130, 230)",
-                      color: "White"
-                    }}
-                    type="Primary"
-                    size="large"
-                    onClick={() => this.takingQuizToggle()}
-                  >
-                    Start
-                  </Button>
-                </div>
-              ) : (
-                <div>
-                  <Card>
-                    <Text
-                      style={{
-                        fontSize: "20px",
-                        color: "black",
-                        marginBottom: "25px"
-                      }}
-                    >
-                      {`${this.state.questionNumber + 1}) ${
-                        this.handleQuestionNumber().content
-                      }`}
-                    </Text>
-                    <Row>
-                      <Radio.Group
-                        value={this.state.multipleChoiceValue}
-                        onChange={this.onChoiceChange}
+                  {!this.state.takingQuiz ? (
+                    <div>
+                      <h3 style={{ textAlign: "center" }}>
+                        Number of questions: {this.state.data.questions.length}
+                      </h3>
+                      <Button
+                        style={{
+                          backgroundColor: "rgb(80, 130, 230)",
+                          color: "White"
+                        }}
+                        type="Primary"
+                        size="large"
+                        onClick={() => this.takingQuizToggle()}
                       >
-                        {this.handleQuestionNumber().choices.map(
-                          (choice, index) => (
-                            <Radio
-                              style={radioStyle}
-                              value={choice.choice_number}
-                              key={index}
-                            >
-                              {choice.text}
-                            </Radio>
-                          )
-                        )}
-                      </Radio.Group>
-                    </Row>
-                  </Card>
-                  {this.state.data.questions.length >
-                  this.state.questionNumber + 1 ? (
-                    <Button
-                      type="primary"
-                      size="large"
-                      style={{ marginTop: "18px" }}
-                      onClick={() =>
-                        this.handleNextQuestion(
-                          this.handleQuestionNumber().question_number,
-                          this.state.multipleChoiceValue
-                        )
-                      }
-                    >
-                      Next Question
-                    </Button>
+                        Start
+                      </Button>
+                    </div>
                   ) : (
-                    <Button
-                      type="primary"
-                      onClick={() => this.testClick()}
-                      size="large"
-                    >
-                      {" "}
-                      Submit{" "}
-                    </Button>
+                    <div>
+                      <Card>
+                        <Text
+                          style={{
+                            fontSize: "20px",
+                            color: "black",
+                            marginBottom: "25px"
+                          }}
+                        >
+                          {`${this.state.questionNumber + 1}) ${
+                            this.handleQuestionNumber().content
+                          }`}
+                        </Text>
+                        <Row>
+                          <Radio.Group
+                            value={this.state.multipleChoiceValue}
+                            onChange={this.onChoiceChange}
+                          >
+                            {this.handleQuestionNumber().choices.map(
+                              (choice, index) => (
+                                <Radio
+                                  style={radioStyle}
+                                  value={choice.choice_number}
+                                  key={index}
+                                >
+                                  {choice.text}
+                                </Radio>
+                              )
+                            )}
+                          </Radio.Group>
+                        </Row>
+                      </Card>
+                      <Button
+                        type="primary"
+                        size="large"
+                        style={{ marginTop: "18px" }}
+                        onClick={() =>
+                          this.handleNextQuestion(
+                            this.handleQuestionNumber().question_number,
+                            this.state.multipleChoiceValue
+                          )
+                        }
+                      >
+                        {this.state.data.questions.length >
+                        this.state.questionNumber + 1
+                          ? "Next Question"
+                          : "Submit"}
+                      </Button>
+                    </div>
                   )}
                 </div>
+              ) : (
+                <QuizComplete
+                  numberCorrect={this.state.quizCompleteData.numberCorrect}
+                  correctRatio={this.state.quizCompleteData.correctRatio}
+                  questions={this.state.quizCompleteData.questionCount}
+                />
               )}
             </Col>
           ) : null}
@@ -194,8 +269,6 @@ class QuizTake extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    loading: state.loading,
-    error: state.error,
     token: state.token
   };
 };

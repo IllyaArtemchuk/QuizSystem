@@ -7,6 +7,16 @@ class Quizes extends React.Component {
     history.push(`/quiz/${itemID}`);
   };
 
+  quizIcon = quizItem => {
+    for (let i = 0; i < this.props.graded.length; i++) {
+      if (this.props.graded[i].quiz === quizItem.id) {
+        return "check";
+      } else {
+        return "exclamation";
+      }
+    }
+  };
+
   render() {
     return (
       <div>
@@ -19,7 +29,7 @@ class Quizes extends React.Component {
               style={{ textAlign: "center", cursor: "pointer" }}
               onClick={() => this.handleClick(item.id)}
             >
-              <Icon type="check" />
+              <Icon type={this.quizIcon(item)} />
               <List.Item.Meta title={item.title} />
             </List.Item>
           )}

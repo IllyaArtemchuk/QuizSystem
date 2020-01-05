@@ -1,13 +1,7 @@
 from rest_framework import serializers
 from homework.models import Quiz, GradedQuiz, Question, Choice, Course
 from users.serializers import StudentSerializer
-
-
-class GradedQuizSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = GradedQuiz
-        fields = ('id', 'student', 'quiz', 'grade')
+from django.contrib.auth import get_user_model
 
 
 class ChoiceSerializer(serializers.ModelSerializer):
@@ -23,7 +17,8 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'question_number', 'content', 'choices')
+        fields = ('id', 'question_number', 'content', 'correct_answer',
+                  'choices', )
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -43,3 +38,12 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = ('id', 'title', 'description', 'created_at',
                   'teacher', 'students', 'quizes')
+
+
+class GradedQuizSerializer(serializers.ModelSerializer):
+
+    quiz = QuizSerializer()
+
+    class Meta:
+        model = GradedQuiz
+        fields = ('id', 'student', 'quiz', 'grade', 'created_at')

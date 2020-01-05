@@ -3,7 +3,7 @@ import axios from "axios";
 import { connect } from "react-redux";
 import CustomForm from "../components/Form";
 import QuizList from "./QuizList";
-import { Card, Icon, Button } from "antd";
+import { Card, Icon, Button, Typography, message } from "antd";
 
 class CourseDetail extends React.Component {
   state = {
@@ -19,11 +19,16 @@ class CourseDetail extends React.Component {
       "Content-Type": "application/json",
       Authorization: `Token ${this.props.token}`
     };
-    axios.get(`http://127.0.0.1:8000/api/v1/course/${courseID}/`).then(res => {
-      this.setState({
-        course: res.data
+    axios
+      .get(`http://127.0.0.1:8000/api/v1/course/${courseID}/`)
+      .then(res => {
+        this.setState({
+          course: res.data
+        });
+      })
+      .catch(err => {
+        message.error(err);
       });
-    });
   };
 
   componentDidMount() {
@@ -153,6 +158,9 @@ class CourseDetail extends React.Component {
         ) : (
           <div></div>
         )}
+        <Typography style={{ textAlign: "center", fontSize: "25px" }}>
+          Quizes
+        </Typography>
 
         <QuizList
           courseID={this.props.match.params.courseID}

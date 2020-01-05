@@ -30,9 +30,10 @@ class Quiz(models.Model):
 
 
 class GradedQuiz(models.Model):
-    quiz = models.OneToOneField(Quiz, on_delete=models.CASCADE)
-    student = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    student = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     grade = models.FloatField()
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return 'graded quiz {} for {}'.format(self.quiz.title, self.student.username)

@@ -5,9 +5,9 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsTeacher, IsTeacherOrReadOnly
-from homework.models import Quiz, Question, Course
+from homework.models import Quiz, Question, Course, GradedQuiz
 from users.models import User, Teacher, Student
-from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer
+from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer, GradedQuizSerializer
 from users.serializers import UserSerializer
 
 
@@ -65,12 +65,19 @@ class QuizDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Quiz.objects.all()
 
 
-class QuestionListView(ListAPIView):
-    serializer_class = QuestionSerializer
+class GradedQuizListView(ListAPIView):
+    serializer_class = GradedQuizSerializer
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
-        """
-        Returns a list of all questions in a quiz based on the url
-        """
-        quizID = self.kwargs['quizID']
-        return Question.objects.filter(quiz__pk=quizID)
+        user = self.request.user
+        return GradedQuiz.objects.filter(student=user).order_by('created_at')
+
+
+class GradedQuizCreateView(CreateAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = GradedQuizSerializer
+    queryset = GradedQuiz.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(student=self.request.user)
