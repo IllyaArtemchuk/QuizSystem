@@ -3,9 +3,12 @@ import axios from "axios";
 import { connect } from "react-redux";
 import CustomForm from "../components/Form";
 import QuizList from "./QuizList";
+import history from "../history";
 import { Card, Icon, Button, Typography, message } from "antd";
 
 class CourseDetail extends React.Component {
+  _isMounted = false;
+
   state = {
     course: [],
     settingsShowing: false,
@@ -27,11 +30,14 @@ class CourseDetail extends React.Component {
         });
       })
       .catch(err => {
-        message.error(err);
+        console.log(err.message);
+        message.error(err.message);
+        history.push("/home");
       });
   };
 
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.token !== null) {
       this.getCourseData();
     }
@@ -41,6 +47,10 @@ class CourseDetail extends React.Component {
     if (this.props.token !== prevProps.token) {
       this.getCourseData();
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   handleSettingsVisibility = e => {

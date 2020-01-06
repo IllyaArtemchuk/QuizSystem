@@ -27,7 +27,7 @@ class CustomForm extends React.Component {
             students: [],
             quizes: []
           })
-          .then(res => history.push(`course/${res.data.id}/`))
+          .then(res => history.push(`/course/${res.data.id}`))
           .catch(err => console.log(err));
       case "put":
         return axios
@@ -38,7 +38,7 @@ class CustomForm extends React.Component {
             students: this.props.course.students,
             quizes: this.props.course.quizes
           })
-          .then(history.push(`course/${this.props.course.id}/`))
+          .then(window.location.reload(false))
           .catch(err => console.log(err));
       default:
         console.log("Request type invalid");

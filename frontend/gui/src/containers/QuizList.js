@@ -1,12 +1,14 @@
 import React from "react";
 import Quizes from "../components/Quizes";
-import { Row, Col, message } from "antd";
+import QuizForm from "../components/NewQuizForm";
+import { Row, Col, message, Button } from "antd";
 import axios from "axios";
 
 class QuizList extends React.Component {
   state = {
     quizes: [],
-    graded: []
+    graded: [],
+    newQuizShowing: false
   };
 
   getQuizData = () => {
@@ -40,7 +42,7 @@ class QuizList extends React.Component {
         });
       })
       .catch(err => {
-        message.error(err);
+        message.error(err.message);
       });
   };
 
@@ -58,14 +60,42 @@ class QuizList extends React.Component {
     }
   }
 
+  showNewQuiz = e => {
+    this.state.newQuizShowing
+      ? this.setState({ newQuizShowing: false })
+      : this.setState({ newQuizShowing: true });
+  };
+
   render() {
     return (
       <Row justify="center">
-        <Col span={8}></Col>
-        <Col span={8}>
-          <Quizes data={this.state.quizes} graded={this.state.graded} />
-        </Col>
-        <Col span={8}></Col>
+        <Row>
+          <Col span={8}></Col>
+          <Col span={8} style={{ textAlign: "center" }}>
+            {this.state.newQuizShowing ? (
+              <QuizForm
+                token={this.props.token}
+                courseID={this.props.courseID}
+              />
+            ) : (
+              <Button
+                onClick={e => this.showNewQuiz(e)}
+                type="primary"
+                style={{ marginTop: "6px", marginBottom: "15px" }}
+              >
+                Create New Quiz
+              </Button>
+            )}
+          </Col>
+          <Col span={8}></Col>
+        </Row>
+        <Row>
+          <Col span={8}></Col>
+          <Col span={8}>
+            <Quizes data={this.state.quizes} graded={this.state.graded} />
+          </Col>
+          <Col span={8}></Col>
+        </Row>
       </Row>
     );
   }

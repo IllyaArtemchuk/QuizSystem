@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, C
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsTeacher, IsTeacherOrReadOnly
+from .permissions import IsTeacher, IsTeacherOrReadOnly, IsTeacherOrIsStudentReadOnly
 from homework.models import Quiz, Question, Course, GradedQuiz
 from users.models import User, Teacher, Student
 from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer, GradedQuizSerializer
@@ -35,7 +35,7 @@ class CourseListView(ListAPIView):
 
 
 class CourseDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsTeacherOrReadOnly, )
+    permission_classes = (IsTeacherOrIsStudentReadOnly, )
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
@@ -56,13 +56,25 @@ class QuizListView(ListAPIView):
         Returns the list of courses a teacher teaches
         """
         courseID = self.kwargs['courseID']
-        return Quiz.objects.filter(course__pk=courseID)
+        return Quiz.objects.filter(course__pk=courseID).order_by('-created_at')
 
 
 class QuizDetailView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsTeacherOrReadOnly, )
     serializer_class = QuizSerializer
     queryset = Quiz.objects.all()
+
+
+class QuizCreateView(CreateAPIView):
+    permission_classes = (IsTeacherOrReadOnly, )
+    serializer_class = QuizSerializer
+    queryset = Quiz.objects.all
+
+    def perform_create(self, serializer):
+        serializer.save(teacher=self.request.user)
+
+
+# GradedQuizViews
 
 
 class GradedQuizListView(ListAPIView):

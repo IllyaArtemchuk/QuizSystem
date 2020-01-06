@@ -13,7 +13,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
 
-    choices = ChoiceSerializer(many=True)
+    choices = ChoiceSerializer(many=True, required=False)
 
     class Meta:
         model = Question
@@ -23,7 +23,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class QuizSerializer(serializers.ModelSerializer):
 
-    questions = QuestionSerializer(many=True)
+    questions = QuestionSerializer(many=True, required=False)
 
     class Meta:
         model = Quiz

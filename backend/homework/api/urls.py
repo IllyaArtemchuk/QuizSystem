@@ -4,6 +4,7 @@ from .views import (CurrentUserView,
                     CourseDetailView,
                     QuizListView,
                     QuizDetailView,
+                    QuizCreateView,
                     CourseCreateView,
                     GradedQuizListView,
                     GradedQuizCreateView)
@@ -16,6 +17,7 @@ urlpatterns = [
     path('course/create/', CourseCreateView.as_view()),
     path('quizes/<int:courseID>/', QuizListView.as_view()),
     path('quiz/<int:pk>/', QuizDetailView.as_view()),
+    path('quiz/create/', QuizCreateView.as_view()),
     path('graded/', GradedQuizListView.as_view()),
     path('grade/', GradedQuizCreateView.as_view())
 ]

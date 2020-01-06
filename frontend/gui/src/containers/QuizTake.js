@@ -157,7 +157,7 @@ class QuizTake extends React.Component {
         });
       })
       .catch(err => {
-        return message.error(err);
+        return message.error(err.message);
       });
   };
 
