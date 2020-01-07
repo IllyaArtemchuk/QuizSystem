@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Row, Col, Button } from "antd";
+import { Row, Col, Button, message } from "antd";
 import CourseList from "./CourseListView";
 import CustomForm from "../components/Form";
 
@@ -11,42 +11,31 @@ class Home extends React.Component {
     newCourseShowing: false
   };
 
+  getUserData = () => {
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios
+      .get("http://127.0.0.1:8000/api/v1/user/")
+      .then(res => {
+        console.log(res);
+        this.setState({ user: res.data });
+      })
+      .catch(err => {
+        message.error(err.message);
+      });
+  };
+
   componentDidMount() {
     if (this.props.token !== null) {
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${this.props.token}`
-      };
-      axios
-        .get("http://127.0.0.1:8000/api/v1/user/")
-        .then(res => {
-          console.log(res);
-          this.setState({ user: res.data });
-        })
-        .catch(err => {
-          console.log(this.props.token);
-          console.log(err);
-        });
+      this.getUserData();
     }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.token !== prevProps.token) {
-      console.log(this.props.token);
-      axios.defaults.headers = {
-        "Content-Type": "application/json",
-        Authorization: `Token ${this.props.token}`
-      };
-      axios
-        .get("http://127.0.0.1:8000/api/v1/user/")
-        .then(res => {
-          console.log(res);
-          this.setState({ user: res.data });
-        })
-        .catch(err => {
-          console.log(this.props.token);
-          console.log(err);
-        });
+      this.getUserData();
     }
   }
 
@@ -86,13 +75,15 @@ class Home extends React.Component {
         <Row>
           <Col span={8}></Col>
           <Col span={8} style={{ textAlign: "center", marginTop: "15px" }}>
-            <Button
-              type="primary"
-              style={{ marginLeft: "20px" }}
-              onClick={e => this.newCourseToggle(e)}
-            >
-              {this.state.newCourseShowing ? "Cancel" : "New Course"}
-            </Button>
+            {this.state.user.role === "TE" ? (
+              <Button
+                type="primary"
+                style={{ marginLeft: "20px" }}
+                onClick={e => this.newCourseToggle(e)}
+              >
+                {this.state.newCourseShowing ? "Cancel" : "New Course"}
+              </Button>
+            ) : null}
           </Col>
           <Col span={8}></Col>
         </Row>

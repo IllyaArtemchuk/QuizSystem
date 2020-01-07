@@ -78,13 +78,17 @@ class QuizList extends React.Component {
                 courseID={this.props.courseID}
               />
             ) : (
-              <Button
-                onClick={e => this.showNewQuiz(e)}
-                type="primary"
-                style={{ marginTop: "6px", marginBottom: "15px" }}
-              >
-                Create New Quiz
-              </Button>
+              <div>
+                {this.props.role === "TE" ? (
+                  <Button
+                    onClick={e => this.showNewQuiz(e)}
+                    type="primary"
+                    style={{ marginTop: "6px", marginBottom: "15px" }}
+                  >
+                    Create New Quiz
+                  </Button>
+                ) : null}
+              </div>
             )}
           </Col>
           <Col span={8}></Col>

@@ -8,7 +8,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Choice
-        fields = ('id', 'text', 'choice_number')
+        fields = ('id', 'text', 'choice_number', 'question')
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'question_number', 'content', 'correct_answer',
+        fields = ('id', 'question_number', 'content', 'correct_answer', 'quiz',
                   'choices', )
 
 

@@ -12,6 +12,7 @@ class QuizTake extends React.Component {
 
   state = {
     data: [],
+    user: {},
     takingQuiz: false,
     questionNumber: 0,
     multipleChoiceValue: 0,
@@ -26,11 +27,14 @@ class QuizTake extends React.Component {
       "Content-Type": "application/json",
       Authorization: `Token ${this.props.token}`
     };
-    axios.get(`http://127.0.0.1:8000/api/v1/quiz/${quizID}/`).then(res => {
-      this.setState({
-        data: res.data
-      });
-    });
+    axios
+      .get(`http://127.0.0.1:8000/api/v1/quiz/${quizID}/`)
+      .then(res => {
+        this.setState({
+          data: res.data
+        });
+      })
+      .catch(err => message.error(err.message));
   }
 
   checkIfQuizComplete() {
@@ -49,11 +53,28 @@ class QuizTake extends React.Component {
     });
   }
 
+  getUserData = () => {
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios
+      .get("http://127.0.0.1:8000/api/v1/user/")
+      .then(res => {
+        console.log(res);
+        this.setState({ user: res.data });
+      })
+      .catch(err => {
+        message.error(err.message);
+      });
+  };
+
   componentDidMount() {
     this._isMounted = true;
     if (this.props.token !== null) {
       this.checkIfQuizComplete();
       this.getQuizData();
+      this.getUserData();
     }
   }
 
@@ -61,6 +82,7 @@ class QuizTake extends React.Component {
     if (this.props.token !== prevProps.token) {
       this.checkIfQuizComplete();
       this.getQuizData();
+      this.getUserData();
     }
   }
 
@@ -132,7 +154,6 @@ class QuizTake extends React.Component {
         correctCount += 1;
       }
     }
-
     const correctRatio = (correctCount / correctAnswers.length).toFixed(2);
     const quizID = this.state.data.id;
 
@@ -161,6 +182,18 @@ class QuizTake extends React.Component {
       });
   };
 
+  handleDelete = () => {
+    const quizID = this.props.match.params.quizID;
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios
+      .delete(`http://127.0.0.1:8000/api/v1/quiz/${quizID}/`)
+      .then(message.success("quiz deleted"), history.push("/home/"))
+      .catch(err => message.error(err.message));
+  };
+
   render() {
     const radioStyle = {
       display: "block",
@@ -187,17 +220,37 @@ class QuizTake extends React.Component {
                       <h3 style={{ textAlign: "center" }}>
                         Number of questions: {this.state.data.questions.length}
                       </h3>
-                      <Button
-                        style={{
-                          backgroundColor: "rgb(80, 130, 230)",
-                          color: "White"
-                        }}
-                        type="Primary"
-                        size="large"
-                        onClick={() => this.takingQuizToggle()}
-                      >
-                        Start
-                      </Button>
+                      {this.state.user.role === "TE" ? (
+                        <div>
+                          <Button
+                            type="Primary"
+                            onClick={() =>
+                              history.push(`/quiz/${this.state.data.id}/create`)
+                            }
+                          >
+                            Add Questions
+                          </Button>
+                          <Button
+                            type="Danger"
+                            style={{ color: "red", marginLeft: "10px" }}
+                            onClick={() => this.handleDelete()}
+                          >
+                            Delete Quiz
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          style={{
+                            backgroundColor: "rgb(80, 130, 230)",
+                            color: "White"
+                          }}
+                          type="Primary"
+                          size="large"
+                          onClick={() => this.takingQuizToggle()}
+                        >
+                          Start
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <div>

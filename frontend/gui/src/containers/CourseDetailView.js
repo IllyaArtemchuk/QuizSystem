@@ -11,9 +11,26 @@ class CourseDetail extends React.Component {
 
   state = {
     course: [],
+    user: {},
     settingsShowing: false,
     editShowing: false,
     deleteTriggered: false
+  };
+
+  getUserData = () => {
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Token ${this.props.token}`
+    };
+    axios
+      .get("http://127.0.0.1:8000/api/v1/user/")
+      .then(res => {
+        console.log(res);
+        this.setState({ user: res.data });
+      })
+      .catch(err => {
+        message.error(err.message);
+      });
   };
 
   getCourseData = () => {
@@ -39,12 +56,14 @@ class CourseDetail extends React.Component {
   componentDidMount() {
     this._isMounted = true;
     if (this.props.token !== null) {
+      this.getUserData();
       this.getCourseData();
     }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.token !== prevProps.token) {
+      this.getUserData();
       this.getCourseData();
     }
   }
@@ -133,11 +152,13 @@ class CourseDetail extends React.Component {
                 ) : (
                   <div></div>
                 )}
-                <Icon
-                  type="setting"
-                  onClick={e => this.handleSettingsVisibility(e)}
-                  style={{ fontSize: "30px" }}
-                />
+                {this.state.user.role == "TE" ? (
+                  <Icon
+                    type="setting"
+                    onClick={e => this.handleSettingsVisibility(e)}
+                    style={{ fontSize: "30px" }}
+                  />
+                ) : null}
               </div>
             }
             title={this.state.course.title}
@@ -175,6 +196,7 @@ class CourseDetail extends React.Component {
         <QuizList
           courseID={this.props.match.params.courseID}
           token={this.props.token}
+          role={this.state.user.role}
         />
       </div>
     );

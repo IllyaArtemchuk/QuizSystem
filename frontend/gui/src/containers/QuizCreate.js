@@ -11,6 +11,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { connect } from "react-redux";
+import history from "../history";
 const { TextArea } = Input;
 
 class QuizCreateQuestions extends React.Component {
@@ -19,7 +20,8 @@ class QuizCreateQuestions extends React.Component {
     questionContent: "",
     choices: [],
     questionNumber: 1,
-    correctAnswer: 0
+    correctAnswer: 0,
+    choicePostCounter: 0
   };
 
   getQuizData = () => {
@@ -29,9 +31,16 @@ class QuizCreateQuestions extends React.Component {
       Authorization: `Token ${this.props.token}`
     };
     axios.get(`http://127.0.0.1:8000/api/v1/quiz/${quizID}/`).then(res => {
-      this.setState({
-        quiz: res.data
-      });
+      this.setState(
+        {
+          quiz: res.data
+        },
+        () => {
+          this.setState({
+            questionNumber: this.state.quiz.questions.length + 1
+          });
+        }
+      );
     });
   };
 
@@ -46,10 +55,6 @@ class QuizCreateQuestions extends React.Component {
       this.getQuizData();
     }
   }
-
-  handleSubmit = () => {
-    console.log("submitted");
-  };
 
   onContentChange = e => {
     this.setState({ questionContent: e.target.value });
@@ -93,6 +98,57 @@ class QuizCreateQuestions extends React.Component {
     });
   };
 
+  submitQuestion = e => {
+    axios
+      .post("http://127.0.0.1:8000/api/v1/question/create/", {
+        question_number: this.state.questionNumber,
+        content: this.state.questionContent,
+        correct_answer: this.state.correctAnswer,
+        quiz: this.props.match.params.quizID
+      })
+      .then(res => {
+        console.log("this is choices", this.state.choices);
+        this.state.choices.forEach(choice => {
+          axios
+            .post("http://127.0.0.1:8000/api/v1/choice/create/", {
+              text: choice.content,
+              choice_number: choice.choice_number,
+              question: res.data.id
+            })
+            .then(res => {
+              this.setState(
+                {
+                  choicePostCounter: (this.state.choicePostCounter += 1)
+                },
+                () => {
+                  if (
+                    this.state.choicePostCounter == this.state.choices.length
+                  ) {
+                    this.setState({
+                      choicePostCounter: 0,
+                      choices: []
+                    });
+                  }
+                }
+              );
+            })
+            .catch(err => {
+              message.error(err.message);
+            });
+        });
+      })
+      .then(
+        this.setState({
+          questionNumber: this.state.questionNumber + 1,
+          correctAnswer: 0,
+          questionContent: ""
+        })
+      )
+      .catch(err => {
+        message.error(err.message);
+      });
+  };
+
   createRadios = () => {
     if (this.state.choices.length > 0) {
       return this.state.choices.map((choice, i) => (
@@ -108,7 +164,7 @@ class QuizCreateQuestions extends React.Component {
         </Row>
       ));
     } else {
-      return <div>Add Choices</div>;
+      return <div></div>;
     }
   };
 
@@ -135,7 +191,7 @@ class QuizCreateQuestions extends React.Component {
           >
             <Typography style={{ textAlign: "left", marginRight: "200px" }}>
               {" "}
-              Correct Answer
+              {this.state.choices.length > 0 ? "Correct Answer" : ""}
             </Typography>
             {this.createRadios()}
           </Radio.Group>
@@ -148,6 +204,24 @@ class QuizCreateQuestions extends React.Component {
             onClick={this.createChoice}
           >
             Add Choice
+          </Button>
+          <Button
+            type="primary"
+            icon="right"
+            style={{ marginTop: "15px", marginLeft: "15px" }}
+            onClick={this.submitQuestion}
+          >
+            Submit
+          </Button>
+          <Button
+            type="primary"
+            icon="home"
+            style={{ marginTop: "15px", marginLeft: "15px" }}
+            onClick={() =>
+              history.push(`/quiz/${this.props.match.params.quizID}`)
+            }
+          >
+            Go Back To Quiz
           </Button>
         </Row>
       </div>

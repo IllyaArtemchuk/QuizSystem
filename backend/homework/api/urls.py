@@ -2,12 +2,14 @@ from django.urls import path
 from .views import (CurrentUserView,
                     CourseListView,
                     CourseDetailView,
+                    CourseCreateView,
                     QuizListView,
                     QuizDetailView,
                     QuizCreateView,
-                    CourseCreateView,
                     GradedQuizListView,
-                    GradedQuizCreateView)
+                    GradedQuizCreateView,
+                    QuestionCreateView,
+                    ChoiceCreateView)
 
 
 urlpatterns = [
@@ -19,5 +21,7 @@ urlpatterns = [
     path('quiz/<int:pk>/', QuizDetailView.as_view()),
     path('quiz/create/', QuizCreateView.as_view()),
     path('graded/', GradedQuizListView.as_view()),
-    path('grade/', GradedQuizCreateView.as_view())
+    path('grade/', GradedQuizCreateView.as_view()),
+    path('question/create/', QuestionCreateView.as_view()),
+    path('choice/create/', ChoiceCreateView.as_view()),
 ]

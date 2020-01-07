@@ -1,13 +1,21 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView, RetrieveAPIView
+from rest_framework.generics import (ListAPIView,
+                                     RetrieveUpdateDestroyAPIView,
+                                     CreateAPIView,
+                                     RetrieveAPIView,
+                                     )
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsTeacher, IsTeacherOrReadOnly, IsTeacherOrIsStudentReadOnly
-from homework.models import Quiz, Question, Course, GradedQuiz
+from homework.models import Quiz, Question, Course, GradedQuiz, Choice
 from users.models import User, Teacher, Student
-from .serializers import QuizSerializer, QuestionSerializer, CourseSerializer, GradedQuizSerializer
+from .serializers import (QuizSerializer,
+                          QuestionSerializer,
+                          CourseSerializer,
+                          GradedQuizSerializer,
+                          ChoiceSerializer)
 from users.serializers import UserSerializer
 
 
@@ -60,21 +68,21 @@ class QuizListView(ListAPIView):
 
 
 class QuizDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsTeacherOrReadOnly, )
+    permission_classes = (IsAuthenticated, IsTeacherOrReadOnly, )
     serializer_class = QuizSerializer
     queryset = Quiz.objects.all()
 
 
 class QuizCreateView(CreateAPIView):
-    permission_classes = (IsTeacherOrReadOnly, )
+    permission_classes = (IsAuthenticated, IsTeacher, )
     serializer_class = QuizSerializer
-    queryset = Quiz.objects.all
+    queryset = Quiz.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(teacher=self.request.user)
 
 
-# GradedQuizViews
+# GradedQuiz Views
 
 
 class GradedQuizListView(ListAPIView):
@@ -93,3 +101,19 @@ class GradedQuizCreateView(CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
+
+# Question Views
+
+
+class QuestionCreateView(CreateAPIView):
+    permission_classes = (IsAuthenticated, IsTeacher, )
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
+
+# Choice Views
+
+
+class ChoiceCreateView(CreateAPIView):
+    permission_classes = (IsAuthenticated, IsTeacher, )
+    serializer_class = ChoiceSerializer
+    queryset = Choice.objects.all()
