@@ -37,21 +37,21 @@ class QuizTake extends React.Component {
       .catch(err => message.error(err.message));
   }
 
-  checkIfQuizComplete() {
+  checkIfQuizComplete = () => {
     axios.defaults.headers = {
       "Content-Type": "application/json",
       Authorization: `Token ${this.props.token}`
     };
     axios.get(`http://127.0.0.1:8000/api/v1/graded/`).then(res => {
       for (let i = 0; i < res.data.length; i++) {
-        if (res.data[i].quiz === this.props.match.params.quizID) {
+        if (res.data[i].quiz == this.props.match.params.quizID) {
           console.log(res.data[i].quiz);
           message.warning("You have completed this quiz already");
           return history.push("/home");
         }
       }
     });
-  }
+  };
 
   getUserData = () => {
     axios.defaults.headers = {
@@ -72,16 +72,16 @@ class QuizTake extends React.Component {
   componentDidMount() {
     this._isMounted = true;
     if (this.props.token !== null) {
-      this.checkIfQuizComplete();
       this.getQuizData();
+      this.checkIfQuizComplete();
       this.getUserData();
     }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.token !== prevProps.token) {
-      this.checkIfQuizComplete();
       this.getQuizData();
+      this.checkIfQuizComplete();
       this.getUserData();
     }
   }

@@ -6,7 +6,6 @@ import PrivateRoute from "./PrivateRoute";
 import Home from "./containers/Home";
 import Login from "./containers/Login";
 import Signup from "./containers/Signup";
-import GradedQuizList from "./containers/GradedQuizList";
 import QuizCreateQuestions from "./containers/QuizCreate";
 
 const BaseRouter = () => (
@@ -17,7 +16,6 @@ const BaseRouter = () => (
     <PrivateRoute exact path="/home" component={Home} />
     <PrivateRoute exact path="/course/:courseID" component={CourseDetail} />
     <PrivateRoute exact path="/quiz/:quizID" component={QuizTake} />
-    <PrivateRoute exact path="/graded" component={GradedQuizList} />
     <PrivateRoute
       exact
       path="/quiz/:quizID/create"

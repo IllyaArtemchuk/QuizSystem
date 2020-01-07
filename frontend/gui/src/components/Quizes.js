@@ -1,5 +1,5 @@
 import React from "react";
-import { List, Icon } from "antd";
+import { List, Icon, Progress } from "antd";
 import history from "../history";
 
 class Quizes extends React.Component {
@@ -10,9 +10,16 @@ class Quizes extends React.Component {
   quizIcon = quizItem => {
     for (let i = 0; i < this.props.graded.length; i++) {
       if (this.props.graded[i].quiz === quizItem.id) {
-        return "check";
+        console.log("this is");
+        return (
+          <Progress
+            type="circle"
+            percent={this.props.graded[i].grade * 100}
+            width={40}
+          />
+        );
       } else {
-        return "exclamation";
+        return <Icon type="exclamation" />;
       }
     }
   };
@@ -29,7 +36,7 @@ class Quizes extends React.Component {
               style={{ textAlign: "center", cursor: "pointer" }}
               onClick={() => this.handleClick(item.id)}
             >
-              <Icon type={this.quizIcon(item)} />
+              {this.quizIcon(item)}
               <List.Item.Meta title={item.title} />
             </List.Item>
           )}
