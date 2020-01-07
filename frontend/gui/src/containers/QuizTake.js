@@ -148,6 +148,8 @@ class QuizTake extends React.Component {
       };
     });
     const submittedAnswers = this.state.submittedAnswers;
+    console.log("this is submittedAnswers", submittedAnswers);
+    console.log("thisd is correct answers", correctAnswers);
     let correctCount = 0;
     for (let i = 0; i < submittedAnswers.length; i++) {
       if (submittedAnswers[i].answer === correctAnswers[i].answer) {

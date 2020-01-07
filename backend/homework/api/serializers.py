@@ -42,7 +42,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class GradedQuizSerializer(serializers.ModelSerializer):
 
-    quiz = QuizSerializer()
+    quiz = serializers.PrimaryKeyRelatedField(queryset=Quiz.objects.all())
 
     class Meta:
         model = GradedQuiz

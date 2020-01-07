@@ -29,7 +29,13 @@ class CustomLayout extends React.Component {
                 <Link to="/login">Login</Link>
               </Menu.Item>
             )}
-            {this.props.isAuthenticated ? null : (
+            {this.props.isAuthenticated ? (
+              <Menu.Item key="3">
+                {this.props.user.role === "TE" ? null : (
+                  <Link to="/graded">Graded</Link>
+                )}{" "}
+              </Menu.Item>
+            ) : (
               <Menu.Item key="3">
                 <Link to="/signup">Sign Up</Link>
               </Menu.Item>

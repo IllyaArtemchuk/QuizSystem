@@ -99,61 +99,72 @@ class QuizCreateQuestions extends React.Component {
   };
 
   submitQuestion = e => {
-    axios
-      .post("http://127.0.0.1:8000/api/v1/question/create/", {
-        question_number: this.state.questionNumber,
-        content: this.state.questionContent,
-        correct_answer: this.state.correctAnswer,
-        quiz: this.props.match.params.quizID
-      })
-      .then(res => {
-        console.log("this is choices", this.state.choices);
-        this.state.choices.forEach(choice => {
-          axios
-            .post("http://127.0.0.1:8000/api/v1/choice/create/", {
-              text: choice.content,
-              choice_number: choice.choice_number,
-              question: res.data.id
-            })
-            .then(res => {
-              this.setState(
-                {
-                  choicePostCounter: (this.state.choicePostCounter += 1)
-                },
-                () => {
-                  if (
-                    this.state.choicePostCounter == this.state.choices.length
-                  ) {
-                    this.setState({
-                      choicePostCounter: 0,
-                      choices: []
-                    });
-                  }
-                }
-              );
-            })
-            .catch(err => {
-              message.error(err.message);
-            });
-        });
-      })
-      .then(
-        this.setState({
-          questionNumber: this.state.questionNumber + 1,
-          correctAnswer: 0,
-          questionContent: ""
+    if (this.state.choices.length < 2) {
+      return message.error("Your question must have at least two choices");
+    } else if (this.state.correctAnswer === 0) {
+      return message.error("You must choose a correct answer");
+    } else if (this.state.questionContent.length < 10) {
+      return message.error("Your question is not long enough");
+    } else {
+      axios
+        .post("http://127.0.0.1:8000/api/v1/question/create/", {
+          question_number: this.state.questionNumber,
+          content: this.state.questionContent,
+          correct_answer: this.state.correctAnswer,
+          quiz: this.props.match.params.quizID
         })
-      )
-      .catch(err => {
-        message.error(err.message);
-      });
+        .then(res => {
+          console.log("this is choices", this.state.choices);
+          this.state.choices.forEach(choice => {
+            axios
+              .post("http://127.0.0.1:8000/api/v1/choice/create/", {
+                text: choice.content,
+                choice_number: choice.choice_number,
+                question: res.data.id
+              })
+              .then(res => {
+                this.setState(
+                  {
+                    choicePostCounter: this.state.choicePostCounter + 1
+                  },
+                  () => {
+                    if (
+                      this.state.choicePostCounter == this.state.choices.length
+                    ) {
+                      this.setState({
+                        choicePostCounter: 0,
+                        choices: []
+                      });
+                    }
+                  }
+                );
+              })
+              .catch(err => {
+                message.error(err.message);
+              });
+          });
+        })
+        .then(
+          this.setState({
+            questionNumber: this.state.questionNumber + 1,
+            correctAnswer: 0,
+            questionContent: ""
+          })
+        )
+        .catch(err => {
+          message.error(err.message);
+        });
+    }
   };
 
   createRadios = () => {
     if (this.state.choices.length > 0) {
       return this.state.choices.map((choice, i) => (
         <Row key={i}>
-          <Radio value={choice.choice_number}>
+          <Radio
+            value={choice.choice_number}
+            onClick={console.log(choice.choice_number)}
+          >
             <Input
               placeholder="Enter Choice"
               size="large"
