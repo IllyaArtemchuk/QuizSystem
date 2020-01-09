@@ -1,6 +1,7 @@
 import React from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 import axios from "axios";
+import history from "../history";
 
 class QuizForm extends React.Component {
   handleSubmit = e => {
@@ -15,9 +16,7 @@ class QuizForm extends React.Component {
         course: this.props.courseID,
         teacher: 1
       })
-      //history.push(`/quiz/${res.data.id}/create/`)
-      .then(res => console.log(res))
-      .catch(err => console.log(err));
+      .catch(err => message.error(err.message));
   };
   render() {
     return (

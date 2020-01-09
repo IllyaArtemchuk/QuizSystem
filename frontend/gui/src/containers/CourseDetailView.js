@@ -62,7 +62,10 @@ class CourseDetail extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.token !== prevProps.token) {
+    if (
+      this.props.token !== prevProps.token ||
+      this.props.location.pathname !== prevProps.location.pathname
+    ) {
       this.getUserData();
       this.getCourseData();
     }

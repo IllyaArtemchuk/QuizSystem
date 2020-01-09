@@ -186,13 +186,17 @@ class QuizTake extends React.Component {
 
   handleDelete = () => {
     const quizID = this.props.match.params.quizID;
+    const courseID = this.state.data.course;
     axios.defaults.headers = {
       "Content-Type": "application/json",
       Authorization: `Token ${this.props.token}`
     };
     axios
       .delete(`http://127.0.0.1:8000/api/v1/quiz/${quizID}/`)
-      .then(message.success("quiz deleted"), history.push("/home/"))
+      .then(
+        message.success("quiz deleted"),
+        history.push(`/course/${courseID}`)
+      )
       .catch(err => message.error(err.message));
   };
 

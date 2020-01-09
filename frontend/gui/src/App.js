@@ -42,7 +42,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Router history={history}>
+        <Router history={history} forceRefresh={true}>
           <CustomLayout {...this.props} user={this.state.user}>
             <BaseRouter />
           </CustomLayout>
