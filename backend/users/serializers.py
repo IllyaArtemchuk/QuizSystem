@@ -20,9 +20,13 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
+
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=get_user_model().objects.all())
+
     class Meta:
         model = Student
-        fields = ('user')
+        fields = ('user', 'id')
 
 
 class TeacherSerializer(serializers.ModelSerializer):

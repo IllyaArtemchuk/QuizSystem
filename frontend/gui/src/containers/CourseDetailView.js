@@ -99,10 +99,10 @@ class CourseDetail extends React.Component {
     axios
       .delete(`http://127.0.0.1:8000/api/v1/course/${courseID}/`)
       .then(res => {
-        console.log(res);
+        history.push("/home");
       })
       .catch(err => {
-        console.log(err);
+        message.error(err.message);
       });
   };
 

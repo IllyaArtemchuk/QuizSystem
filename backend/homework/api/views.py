@@ -8,12 +8,14 @@ from rest_framework.generics import (ListAPIView,
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsTeacher, IsTeacherOrReadOnly, IsTeacherOrIsStudentReadOnly
+from .permissions import IsTeacher, IsTeacherOrReadOnly, IsTeacherOrIsStudentReadOnly, StudentReadOnly
 from homework.models import Quiz, Question, Course, GradedQuiz, Choice
 from users.models import User, Teacher, Student
+from users.serializers import StudentSerializer
 from .serializers import (QuizSerializer,
                           QuestionSerializer,
                           CourseSerializer,
+                          CourseAllSerializer,
                           GradedQuizSerializer,
                           ChoiceSerializer)
 from users.serializers import UserSerializer
@@ -27,6 +29,12 @@ class CurrentUserView(RetrieveAPIView):
 
 
 # Course Query Views
+
+class AllCourseListView(ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = CourseAllSerializer
+    queryset = Course.objects.all().order_by('-created_at')
+
 
 class CourseListView(ListAPIView):
     serializer_class = CourseSerializer
@@ -43,7 +51,7 @@ class CourseListView(ListAPIView):
 
 
 class CourseDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsTeacherOrIsStudentReadOnly, )
+    permission_classes = (IsAuthenticated, )
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
@@ -117,3 +125,20 @@ class ChoiceCreateView(CreateAPIView):
     permission_classes = (IsAuthenticated, IsTeacher, )
     serializer_class = ChoiceSerializer
     queryset = Choice.objects.all()
+
+
+# Student Views
+
+class StudentDetailView(RetrieveUpdateDestroyAPIView):
+    permissions = (IsAuthenticated, StudentReadOnly, )
+    serializer_class = StudentSerializer
+    queryset = Student.objects.all()
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+
+        if pk == "current":
+            pk = self.request.user.pk
+            return Student.objects.filter(user__pk=pk).first()
+
+        return super(StudentDetailView, self).get_object()

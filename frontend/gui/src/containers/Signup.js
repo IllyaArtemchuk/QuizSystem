@@ -58,7 +58,7 @@ class RegistrationForm extends React.Component {
                 prefix={
                   <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
-                placeholder="Username"
+                placeholder="Username, You cannot use spaces"
               />
             )}
           </Form.Item>

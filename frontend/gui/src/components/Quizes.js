@@ -18,10 +18,9 @@ class Quizes extends React.Component {
             width={40}
           />
         );
-      } else {
-        return <Icon type="exclamation" />;
       }
     }
+    return <Icon type="exclamation" />;
   };
 
   render() {
